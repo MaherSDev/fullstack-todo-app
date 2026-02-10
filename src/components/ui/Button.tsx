@@ -31,11 +31,12 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
-)
+  },
+);
 
 interface ButtonProps
-  extends HTMLAttributes<HTMLButtonElement>,
+  extends
+    HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   children: ReactNode;
   isLoading?: boolean;
