@@ -32,8 +32,7 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-);
-
+)
 
 interface ButtonProps
   extends HTMLAttributes<HTMLButtonElement>,
