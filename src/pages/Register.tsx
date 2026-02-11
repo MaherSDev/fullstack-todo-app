@@ -2,6 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import InputErrorMessage from "../components/InputErrorMessage";
+import { REGISTER_FORM } from "../data";
 
 interface IFormInput {
   username: string;
@@ -10,6 +11,12 @@ interface IFormInput {
 }
 
 // Renders
+const renderRegisterForm = REGISTER_FORM.map(({ name, placeholder, type, validation }, idx) => (
+	<div key={idx}>
+		<Input {...register(name, validation)} placeholder={placeholder} type={type} />
+	</div>
+))
+
 const RegisterPage = () => {
   const {
     register,
@@ -27,6 +34,7 @@ const RegisterPage = () => {
       </h2>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+				{renderRegisterForm}
         <div>
           <Input
             placeholder="Username"
