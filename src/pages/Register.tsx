@@ -17,7 +17,7 @@ const RegisterPage = () => {
   } = useForm<IFormInput>();
   const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
 
-	console.log(errors)
+  console.log(errors);
 
   return (
     <div className="max-w-md mx-auto">
@@ -26,9 +26,21 @@ const RegisterPage = () => {
       </h2>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <Input placeholder="Username" {...register("username", {required: "Username is required!"})} />
-        <Input placeholder="Email address" {...register("email", {required: "Email is required!"})} />
-        <Input placeholder="Password" {...register("password", {required: "Password is required!"})} />
+        <Input
+          placeholder="Username"
+          {...register("username", { required: true, minLength: 5 })}
+        />
+        <Input
+          placeholder="Email address"
+          {...register("email", {
+            required: true,
+            pattern: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+          })}
+        />
+        <Input
+          placeholder="Password"
+          {...register("password", { required: true, minLength: 6 })}
+        />
 
         <Button fullWidth>Register</Button>
       </form>
