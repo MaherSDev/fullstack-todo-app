@@ -1,5 +1,5 @@
 export interface IRegisterInput {
-  name: string;
+  name: "username" | "email" | "password";
   placeholder: string;
   type: string;
   validation: {

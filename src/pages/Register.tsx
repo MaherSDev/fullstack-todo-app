@@ -11,11 +11,17 @@ interface IFormInput {
 }
 
 // Renders
-const renderRegisterForm = REGISTER_FORM.map(({ name, placeholder, type, validation }, idx) => (
-	<div key={idx}>
-		<Input {...register(name, validation)} placeholder={placeholder} type={type} />
-	</div>
-))
+// const renderRegisterForm = REGISTER_FORM.map(
+//   ({ name, placeholder, type, validation }, idx) => (
+//     <div key={idx}>
+//       <Input
+//         {...register(name, validation)}
+//         placeholder={placeholder}
+//         type={type}
+//       />
+//     </div>
+//   ),
+// );
 
 const RegisterPage = () => {
   const {
@@ -34,47 +40,16 @@ const RegisterPage = () => {
       </h2>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-				{renderRegisterForm}
-        <div>
-          <Input
-            placeholder="Username"
-            {...register("username", { required: true, minLength: 5 })}
-          />
-          {errors?.username && errors.username.type === "required" && (
-            <InputErrorMessage msg="Username is Required." />
-          )}
-          {errors?.username && errors.username.type === "minLength" && (
-            <InputErrorMessage msg="Username should be at-least 5 characters." />
-          )}
-        </div>
-        <div>
-          <Input
-            placeholder="Email address"
-            {...register("email", {
-              required: true,
-              pattern: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-            })}
-          />
-					{errors?.email && errors.email.type === "required" && (
-            <InputErrorMessage msg="Email is Required." />
-          )}
-          {errors?.email && errors.email.type === "pattern" && (
-            <InputErrorMessage msg="Not valid Email." />
-          )}
-        </div>
-        <div>
-          <Input
-            placeholder="Password"
-            {...register("password", { required: true, minLength: 6 })}
-          />
-					{errors?.password && errors.password.type === "required" && (
-            <InputErrorMessage msg="Password is Required." />
-          )}
-          {errors?.password && errors.password.type === "minLength" && (
-            <InputErrorMessage msg="Password should be at-least 6 characters." />
-          )}
-        </div>
-
+        {REGISTER_FORM.map(({ name, placeholder, type, validation }, idx) => (
+          <div key={idx}>
+            <Input
+              {...register(name, validation)}
+              placeholder={placeholder}
+              type={type}
+            />
+						{errors[name] && <InputErrorMessage msg={errors[name]?.message} />}
+          </div>
+        ))}
         <Button fullWidth>Register</Button>
       </form>
     </div>
