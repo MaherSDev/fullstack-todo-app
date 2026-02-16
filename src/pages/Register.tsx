@@ -10,19 +10,6 @@ interface IFormInput {
   password: string;
 }
 
-// Renders
-// const renderRegisterForm = REGISTER_FORM.map(
-//   ({ name, placeholder, type, validation }, idx) => (
-//     <div key={idx}>
-//       <Input
-//         {...register(name, validation)}
-//         placeholder={placeholder}
-//         type={type}
-//       />
-//     </div>
-//   ),
-// );
-
 const RegisterPage = () => {
   const {
     register,
