@@ -3,6 +3,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import InputErrorMessage from "../components/InputErrorMessage";
 import { REGISTER_FORM } from "../data";
+import axiosInstance from "../config/axios.config";
 
 interface IFormInput {
   username: string;
@@ -16,7 +17,18 @@ const RegisterPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+
+  // ** Handlers
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    console.log(data);
+
+    try {
+      const res = await axiosInstance.post("auth/local/register", data);
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   console.log(errors);
 
@@ -34,7 +46,7 @@ const RegisterPage = () => {
               placeholder={placeholder}
               type={type}
             />
-						{errors[name] && <InputErrorMessage msg={errors[name]?.message} />}
+            {errors[name] && <InputErrorMessage msg={errors[name]?.message} />}
           </div>
         ))}
         <Button fullWidth>Register</Button>
