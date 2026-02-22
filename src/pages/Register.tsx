@@ -1,8 +1,10 @@
 import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import InputErrorMessage from "../components/InputErrorMessage";
 import { REGISTER_FORM } from "../data";
+import { registerSchema } from "../validation/index";
 import axiosInstance from "../config/axios.config";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -19,7 +21,9 @@ const RegisterPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    resolver: yupResolver(registerSchema),
+  });
 
   // ** Handlers
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
@@ -65,7 +69,7 @@ const RegisterPage = () => {
             {errors[name] && <InputErrorMessage msg={errors[name]?.message} />}
           </div>
         ))}
-        <Button fullWidth>{isLoading ? "Loading..." : "Register"}</Button>
+        <Button fullWidth isLoading={isLoading}>Register</Button>
       </form>
     </div>
   );
