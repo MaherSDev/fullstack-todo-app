@@ -1,8 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
+import Button from "./ui/Button";
 
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
@@ -26,12 +28,13 @@ const Navbar = () => {
             <li className="duration-200 text-lg">
               <NavLink to="/profile">Profile</NavLink>
             </li>
-            <button
+            <Button
               className="bg-indigo-500 text-white p-2 rounded-md cursor-pointer"
               onClick={onLogout}
+              isLoading={!userDataString}
             >
               Logout
-            </button>
+            </Button>
           </div>
         ) : (
           <p className="flex items-center space-x-3">
