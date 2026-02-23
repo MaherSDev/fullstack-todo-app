@@ -1,10 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom";
 import Button from "./ui/Button";
 
-
 const Navbar = () => {
   const { pathname } = useLocation();
-  
+
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
@@ -31,7 +30,6 @@ const Navbar = () => {
             <Button
               className="bg-indigo-500 text-white p-2 rounded-md cursor-pointer"
               onClick={onLogout}
-              isLoading={!userDataString}
             >
               Logout
             </Button>
