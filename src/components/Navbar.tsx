@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 
+
 const Navbar = () => {
   const { pathname } = useLocation();
   const storageKey = "loggedInUser";

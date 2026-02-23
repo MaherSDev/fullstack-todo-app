@@ -10,6 +10,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { IErrorResponse } from "../interfaces";
+import { useNavigate } from "react-router-dom";
 
 interface IFormInput {
   username: string;
@@ -18,7 +19,8 @@ interface IFormInput {
 }
 
 const RegisterPage = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -29,30 +31,35 @@ const RegisterPage = () => {
 
   // ** Handlers
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const {status} = await axiosInstance.post("auth/local/register", data);
-      if(status === 200){
-        toast.success("You will navigate to the login page after 2 seconds to login!", {
-          position: "bottom-center",
-          duration: 1500,
-          style: {
-            backgroundColor: "black",
-            color: "white",
-            width: "fit-contetn"
-          }
-        })
+      const { status } = await axiosInstance.post("auth/local/register", data);
+      if (status === 200) {
+        toast.success(
+          "You will navigate to the login page after 2 seconds to login!",
+          {
+            position: "bottom-center",
+            duration: 1500,
+            style: {
+              backgroundColor: "black",
+              color: "white",
+              width: "fit-contetn",
+            },
+          },
+        );
+
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error) {
       const errorObj = error as AxiosError<IErrorResponse>;
-      toast.error(`${errorObj.response?.data.error.message}`,{
+      toast.error(`${errorObj.response?.data.error.message}`, {
         position: "bottom-center",
-        duration: 4000,
-      })
+        duration: 1500,
+      });
       console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +80,9 @@ const RegisterPage = () => {
             {errors[name] && <InputErrorMessage msg={errors[name]?.message} />}
           </div>
         ))}
-        <Button fullWidth isLoading={isLoading}>Register</Button>
+        <Button fullWidth isLoading={isLoading}>
+          Register
+        </Button>
       </form>
     </div>
   );

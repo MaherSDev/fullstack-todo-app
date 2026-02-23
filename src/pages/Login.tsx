@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { IErrorResponse } from "../interfaces";
 import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 interface IFormInput {
   identifier: string;
@@ -17,6 +18,7 @@ interface IFormInput {
 }
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -31,10 +33,10 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const { status } = await axiosInstance.post("auth/local", data);
+      const { status, data: resData } = await axiosInstance.post("auth/local", data);
       if (status === 200) {
         toast.success(
-          "You will navigate to the home page after 2 seconds to login!",
+          "You will navigate to the home page after 2 seconds",
           {
             position: "bottom-center",
             duration: 1500,
@@ -45,12 +47,16 @@ const LoginPage = () => {
             },
           },
         );
+
+        localStorage.setItem("loggedInUser", JSON.stringify(resData))
+
+        setTimeout(() => location.replace("/"), 2000);
       }
     } catch (error) {
       const errorObj = error as AxiosError<IErrorResponse>;
       toast.error(`${errorObj.response?.data.error.message}`, {
         position: "bottom-center",
-        duration: 4000,
+        duration: 1500,
       });
       console.error(error);
     } finally {
@@ -78,9 +84,9 @@ const LoginPage = () => {
       </h2>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         {renederLoginForm}
-      <Button fullWidth isLoading={isLoading}>
-        Login
-      </Button>
+        <Button fullWidth isLoading={isLoading}>
+          Login
+        </Button>
       </form>
     </div>
   );
