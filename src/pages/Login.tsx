@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { IErrorResponse } from "../interfaces";
 import Button from "../components/ui/Button";
-import { useNavigate } from "react-router-dom";
 
 interface IFormInput {
   identifier: string;
@@ -18,7 +17,6 @@ interface IFormInput {
 }
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -33,22 +31,22 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const { status, data: resData } = await axiosInstance.post("auth/local", data);
+      const { status, data: resData } = await axiosInstance.post(
+        "auth/local",
+        data,
+      );
       if (status === 200) {
-        toast.success(
-          "You will navigate to the home page after 2 seconds",
-          {
-            position: "bottom-center",
-            duration: 1500,
-            style: {
-              backgroundColor: "black",
-              color: "white",
-              width: "fit-contetn",
-            },
+        toast.success("You will navigate to the home page after 2 seconds", {
+          position: "bottom-center",
+          duration: 1500,
+          style: {
+            backgroundColor: "black",
+            color: "white",
+            width: "fit-contetn",
           },
-        );
+        });
 
-        localStorage.setItem("loggedInUser", JSON.stringify(resData))
+        localStorage.setItem("loggedInUser", JSON.stringify(resData));
 
         setTimeout(() => location.replace("/"), 2000);
       }
