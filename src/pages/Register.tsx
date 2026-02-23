@@ -29,7 +29,6 @@ const RegisterPage = () => {
 
   // ** Handlers
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    console.log(data);
     setIsLoading(true)
 
     try {
@@ -51,12 +50,11 @@ const RegisterPage = () => {
         position: "bottom-center",
         duration: 4000,
       })
+      console.log(error);
     } finally {
       setIsLoading(false)
     }
   };
-
-  console.log(errors);
 
   return (
     <div className="max-w-md mx-auto">
