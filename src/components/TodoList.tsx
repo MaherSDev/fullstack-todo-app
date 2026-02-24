@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
 import axiosInstance from "../config/axios.config";
 import { ITodo } from "../interfaces";
 import Button from "./ui/Button";
 import { useQuery } from "@tanstack/react-query";
 
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
