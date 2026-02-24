@@ -2,37 +2,33 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../config/axios.config";
 import { ITodo } from "../interfaces";
 import Button from "./ui/Button";
+import { useQuery } from "@tanstack/react-query";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
 
-  useEffect(() => {
-    try {
-      axiosInstance
-        .get("/users/me?populate=todos", {
-          headers: {
-            Authorization: `Bearer ${userData.jwt}`,
-          },
-        })
-        .then((res) => setTodos(res.data.todos))
-        .catch((err) => console.log("THE ERROR", err)); 
-    } catch (error) {
-      console.log(error);
-    } finally{
-      setIsLoading(false)
+  const {isLoading, data, error} = useQuery({
+    queryKey: ["todos"],
+    queryFn: async() => {
+      const {data} = await axiosInstance.get("/users/me?populate=todos", {
+        headers: {
+          Authorization: `Bearer ${userData.jwt}`,
+        },
+      })
+      return data.todos;
     }
-  }, [userData.jwt]);
+  })
 
   if(isLoading) return <h3>Loading...</h3>
+  if(error) return <h3>An error has occured: {error.message}</h3>
   
   return (
     <div>
       {
-        todos.map((todo: ITodo) => {
+        data.map((todo: ITodo) => {
           return (
             <div
               key={todo.id}
