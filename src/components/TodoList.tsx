@@ -5,6 +5,7 @@ import Button from "./ui/Button";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
@@ -21,9 +22,12 @@ const TodoList = () => {
         .catch((err) => console.log("THE ERROR", err)); 
     } catch (error) {
       console.log(error);
+    } finally{
+      setIsLoading(false)
     }
   }, [userData.jwt]);
 
+  if(isLoading) return <h3>Loading...</h3>
   
   return (
     <div>
