@@ -8,25 +8,25 @@ const TodoList = () => {
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
 
-  const {isLoading, data, error} = useQuery({
+  const { isLoading, data, error } = useQuery({
     queryKey: ["todos"],
-    queryFn: async() => {
-      const {data} = await axiosInstance.get("/users/me?populate=todos", {
+    queryFn: async () => {
+      const { data } = await axiosInstance.get("/users/me?populate=todos", {
         headers: {
           Authorization: `Bearer ${userData.jwt}`,
         },
-      })
-      return data.todos;
-    }
-  })
+      });
+      return data;
+    },
+  });
 
-  if(isLoading) return <h3>Loading...</h3>
-  if(error) return <h3>An error has occured: {error.message}</h3>
-  
+  if (isLoading) return <h3>Loading...</h3>;
+  if (error) return <h3>An error has occurred: {error.message}</h3>;
+
   return (
     <div>
-      {
-        data.map((todo: ITodo) => {
+      {data.todos.length ? (
+        data.todos.map((todo: ITodo) => {
           return (
             <div
               key={todo.id}
@@ -54,7 +54,9 @@ const TodoList = () => {
             </div>
           );
         })
-      }
+      ) : (
+        <h3 className="text-center text-gray-500">No todos found.</h3>
+      )}
     </div>
   );
 };

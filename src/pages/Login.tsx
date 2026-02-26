@@ -42,7 +42,7 @@ const LoginPage = () => {
           style: {
             backgroundColor: "black",
             color: "white",
-            width: "fit-contetn",
+            width: "fit-content",
           },
         });
 
