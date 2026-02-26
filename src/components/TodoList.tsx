@@ -1,12 +1,23 @@
+import { useState } from "react";
 import useAuthenticatedQuery from "../hooks/useAuthenticatedQuery";
 import { ITodo } from "../interfaces";
 import Button from "./ui/Button";
+import Input from "./ui/Input";
 import Modal from "./ui/Modal";
+import Textarea from "./ui/Textarea";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
+  
+  const [isEditModalOpen ,setIsEditModalOpen] = useState(false)
+  const [todoToEdit ,setTodoToEdit] = useState<ITodo>({
+    id: 0,
+    title: "",
+    description: ""
+  })
+
 
   const { isLoading, data, error } = useAuthenticatedQuery({
     queryKey: ["todos"],
@@ -19,8 +30,17 @@ const TodoList = () => {
   });
   // ** Hanlers
   const onCloseEditModal = () => {
-
+    setTodoToEdit({
+    id: 0,
+    title: "",
+    description: ""
+  })
+    setIsEditModalOpen(false)
   }
+  const onOpenEditModal = (todo: ITodo) => {
+    setTodoToEdit(todo)
+    setIsEditModalOpen(true)
+  };
 
   if (isLoading) return <h3>Loading...</h3>;
   if (error) return <h3>An error has occurred: {error.message}</h3>;
@@ -41,7 +61,7 @@ const TodoList = () => {
                 <Button
                   variant={"default"}
                   size={"sm"}
-                  // onClick={() => onOpenEditModal(todo)}
+                  onClick={() => onOpenEditModal(todo)}
                 >
                   Edit
                 </Button>
@@ -59,22 +79,23 @@ const TodoList = () => {
       ) : (
         <h3 className="text-center text-gray-500">No todos found.</h3>
       )}
-      <Modal isOpen closeModal={onCloseEditModal} title="Edit this todo">
-        <div className="flex flex-wrap items-center space-x-3 gap-y-2">
-            <Button
-              className="bg-designColor hover:bg-hoverColor"
-              type="submit"
-            >
+      <Modal isOpen={isEditModalOpen} closeModal={onCloseEditModal} title="Edit this todo">
+        <div className="space-y-3">
+          <Input value={todoToEdit.title} />
+          <Textarea value={todoToEdit.description} />
+          <div className="flex flex-wrap items-center space-x-3 gap-y-2">
+            <Button className="bg-designColor hover:bg-hoverColor" type="submit">
               submit
             </Button>
             <Button
-            variant={"cancel"}
+              variant={"cancel"}
               type="button"
-              // onClick={() => (closeEditModal(), setErrorsMsg(defaultErrorMsg))}
+              onClick={() => onCloseEditModal()}
             >
               cancel
             </Button>
           </div>
+        </div>
       </Modal>
     </div>
   );
