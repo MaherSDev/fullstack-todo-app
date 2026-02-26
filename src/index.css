@@ -1,3 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-assistant: "Assistant", sans-serif;
+  --text-full: 200%;
+
+  /* Colors */
+  --color-primary: #fff;
+  --color-text: #000;
+  --color-lightText: #111;
+  --color-designColor: #432dd7;
+  --color-activeColor: #312c85;
+  --color-hoverColor: #312c85;
+  --color-bgActiveColor: #001a33;
+  --color-bgColor: #003364;
+  --color-bodyColor: #f0f2f5;
+  --color-bodyActive: #eaebfe;
+  --color-dropdownColor: #f9f9f9;
+  --color-boxBg: linear-gradient(145deg, #1e2024, #23272b);
+  --color-favorite: #f4b400;
+  --color-delete: #ce0000;
+  --color-icon: #444746;
+  --color-border: #e3e3e3;
+  --color-label: rgba(0, 0, 0, 0.6);
+
+  /* List Style */
+  --my-marker: "-";
+
+  /* Opacity */
+  --opacity-hover: 0.8;
+
+  /* Transitions */
+  --tw-hover: all;
+  --transition-timing-function-hover: ease;
+  --transition-duration-hover3: 0.3s;
+  --transition-duration-hover5: 0.5s;
+
+  /* Shadows */
+  --shadow-shadowOne: 10px 10px 19px #ececec, -10px -10px 19px #e7e7e7;
+  --shadow-shadowBottom: 0px 2px 10px rgb(100 100 100 / 15%);
+  --shadow-shadowCenter: 0px 2px 10px rgb(100 100 100 / 40%);
+  --shadow-shadowHover: 0px 2px 10px rgb(100 100 100 / 60%);
+  --shadow-shadowTop: 0px -2px 10px rgb(100 100 100 / 15%);
+  --shadow-dropdown: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Screens */
+  --max-width-maxWidth: 100%;
+  --height-fullScreen: 100vh;
+  --height-adminContent: calc(100vh - 300px);
+  --breakpoint-3xl: 112rem;
+  --breakpoint-xs: 35rem;
+  --breakpoint-2xs: 30rem;
+  --breakpoint-3xs: 22rem;
+}
+
+html {
+	font-family: var(--font-assistant), sans-serif;
+}

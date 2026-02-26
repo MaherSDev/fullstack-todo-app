@@ -1,6 +1,7 @@
 import useAuthenticatedQuery from "../hooks/useAuthenticatedQuery";
 import { ITodo } from "../interfaces";
 import Button from "./ui/Button";
+import Modal from "./ui/Modal";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
@@ -16,6 +17,10 @@ const TodoList = () => {
       },
     },
   });
+  // ** Hanlers
+  const onCloseEditModal = () => {
+
+  }
 
   if (isLoading) return <h3>Loading...</h3>;
   if (error) return <h3>An error has occurred: {error.message}</h3>;
@@ -54,6 +59,23 @@ const TodoList = () => {
       ) : (
         <h3 className="text-center text-gray-500">No todos found.</h3>
       )}
+      <Modal isOpen closeModal={onCloseEditModal} title="Edit this todo">
+        <div className="flex flex-wrap items-center space-x-3 gap-y-2">
+            <Button
+              className="bg-designColor hover:bg-hoverColor"
+              type="submit"
+            >
+              submit
+            </Button>
+            <Button
+            variant={"cancel"}
+              type="button"
+              // onClick={() => (closeEditModal(), setErrorsMsg(defaultErrorMsg))}
+            >
+              cancel
+            </Button>
+          </div>
+      </Modal>
     </div>
   );
 };
