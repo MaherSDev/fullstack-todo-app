@@ -28,7 +28,7 @@ const TodoList = () => {
       },
     },
   });
-  // ** Hanlers
+  // ** Handlers
   const onCloseEditModal = () => {
     setTodoToEdit({
     id: 0,
