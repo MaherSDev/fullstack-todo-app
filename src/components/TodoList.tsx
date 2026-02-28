@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import useAuthenticatedQuery from "../hooks/useAuthenticatedQuery";
 import { ITodo } from "../interfaces";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Modal from "./ui/Modal";
 import Textarea from "./ui/Textarea";
+import axiosInstance from "../config/axios.config";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
-  
-  const [isEditModalOpen ,setIsEditModalOpen] = useState(false)
-  const [todoToEdit ,setTodoToEdit] = useState<ITodo>({
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [todoToEdit, setTodoToEdit] = useState<ITodo>({
     id: 0,
     title: "",
-    description: ""
-  })
-
+    description: "",
+  });
 
   const { isLoading, data, error } = useAuthenticatedQuery({
     queryKey: ["todos"],
@@ -28,18 +28,48 @@ const TodoList = () => {
       },
     },
   });
+
   // ** Handlers
   const onCloseEditModal = () => {
     setTodoToEdit({
-    id: 0,
-    title: "",
-    description: ""
-  })
-    setIsEditModalOpen(false)
-  }
+      id: 0,
+      title: "",
+      description: "",
+    });
+    setIsEditModalOpen(false);
+  };
+
+  const submitHandler = async (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+
+    const { title, description } = todoToEdit;
+
+    try {
+      const res = await axiosInstance.put(
+        `/todos/${todoToEdit.id}`,
+        { data: { title, description } },
+        { headers: { Authorization: `Bearer ${userData.jwt}` } },
+      );
+			console.log(res)
+    } catch (error) {
+			console.error(error);
+		}
+  };
+
+  const onChangeHandler = (
+    evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { value, name } = evt.target;
+
+    setTodoToEdit((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const onOpenEditModal = (todo: ITodo) => {
-    setTodoToEdit(todo)
-    setIsEditModalOpen(true)
+    setTodoToEdit(todo);
+    setIsEditModalOpen(true);
   };
 
   if (isLoading) return <h3>Loading...</h3>;
@@ -79,12 +109,27 @@ const TodoList = () => {
       ) : (
         <h3 className="text-center text-gray-500">No todos found.</h3>
       )}
-      <Modal isOpen={isEditModalOpen} closeModal={onCloseEditModal} title="Edit this todo">
-        <div className="space-y-3">
-          <Input value={todoToEdit.title} />
-          <Textarea value={todoToEdit.description} />
+      <Modal
+        isOpen={isEditModalOpen}
+        closeModal={onCloseEditModal}
+        title="Edit this todo"
+      >
+        <form className="space-y-3" onSubmit={submitHandler}>
+          <Input
+            name="title"
+            value={todoToEdit.title}
+            onChange={onChangeHandler}
+          />
+          <Textarea
+            name="description"
+            value={todoToEdit.description}
+            onChange={onChangeHandler}
+          />
           <div className="flex flex-wrap items-center space-x-3 gap-y-2">
-            <Button className="bg-designColor hover:bg-hoverColor" type="submit">
+            <Button
+              className="bg-designColor hover:bg-hoverColor"
+              type="submit"
+            >
               submit
             </Button>
             <Button
@@ -95,7 +140,7 @@ const TodoList = () => {
               cancel
             </Button>
           </div>
-        </div>
+        </form>
       </Modal>
     </div>
   );
