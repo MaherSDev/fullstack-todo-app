@@ -6,6 +6,7 @@ import Input from "./ui/Input";
 import Modal from "./ui/Modal";
 import Textarea from "./ui/Textarea";
 import axiosInstance from "../config/axios.config";
+import TodoSkeleton from "./TodoSkeleton";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
@@ -103,7 +104,15 @@ const TodoList = () => {
     }));
   };
 
-  if (isLoading) return <h3>Loading...</h3>;
+  if (isLoading) 
+    return (
+      <div className="space-y-1 p-3">
+        {Array.from({length: data?.todos.length}, (_, idx) => (
+          <TodoSkeleton key={idx} />
+        ))}
+      </div>
+    );
+  
   if (error) return <h3>An error has occurred: {error.message}</h3>;
 
   return (
