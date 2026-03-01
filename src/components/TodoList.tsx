@@ -11,17 +11,21 @@ const TodoList = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [todoToEdit, setTodoToEdit] = useState<ITodo>({
+  const defaultTodo = {
     id: 0,
+    documentId: "",
     title: "",
     description: "",
-  });
+  };
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodo);
 
   const { isLoading, data, error } = useAuthenticatedQuery({
-    queryKey: ["todos"],
-    url: "/users/me?populate=todos",
+    queryKey: ["todoList", `${todoToEdit.documentId}`],
+    url: "/users/me?populate=todos&status=draft",
     config: {
       headers: {
         Authorization: `Bearer ${userData.jwt}`,
@@ -30,30 +34,62 @@ const TodoList = () => {
   });
 
   // ** Handlers
+  const onCloseConfirmModal = () => {
+    setTodoToEdit(defaultTodo);
+    setIsConfirmModalOpen(false);
+  };
+  const onOpenConfirmModal = (todo: ITodo) => {
+    setTodoToEdit(todo);
+    setIsConfirmModalOpen(true);
+  };
   const onCloseEditModal = () => {
-    setTodoToEdit({
-      id: 0,
-      title: "",
-      description: "",
-    });
+    setTodoToEdit(defaultTodo);
     setIsEditModalOpen(false);
+  };
+  const onOpenEditModal = (todo: ITodo) => {
+    setTodoToEdit(todo);
+    setIsEditModalOpen(true);
   };
 
   const submitHandler = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setIsUpdated(true);
 
-    const { title, description } = todoToEdit;
-
+    const { documentId, title, description } = todoToEdit;
     try {
       const res = await axiosInstance.put(
-        `/todos/${todoToEdit.id}`,
+        `/todos/${documentId}`,
         { data: { title, description } },
         { headers: { Authorization: `Bearer ${userData.jwt}` } },
       );
-			console.log(res)
+
+      if (res.status === 200) {
+        onCloseEditModal();
+      }
     } catch (error) {
-			console.error(error);
-		}
+      console.error(error);
+    } finally {
+      setIsUpdated(false);
+    }
+  };
+
+  const onRemoveHandler = async () => {
+    setIsUpdated(true);
+
+    try {
+      const { status } = await axiosInstance.delete(
+        `/todos/${todoToEdit.documentId}`,
+        { headers: { Authorization: `Bearer ${userData.jwt}` } },
+      );
+
+      if (status >= 200 && status <= 299) {
+        onCloseConfirmModal();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUpdated(false);
+    }
   };
 
   const onChangeHandler = (
@@ -65,11 +101,6 @@ const TodoList = () => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const onOpenEditModal = (todo: ITodo) => {
-    setTodoToEdit(todo);
-    setIsEditModalOpen(true);
   };
 
   if (isLoading) return <h3>Loading...</h3>;
@@ -98,7 +129,7 @@ const TodoList = () => {
                 <Button
                   variant={"danger"}
                   size={"sm"}
-                  // onClick={() => openConfirmModal(todo)}
+                  onClick={() => onOpenConfirmModal(todo)}
                 >
                   Remove
                 </Button>
@@ -109,6 +140,7 @@ const TodoList = () => {
       ) : (
         <h3 className="text-center text-gray-500">No todos found.</h3>
       )}
+      {/* Update Todo MODAL */}
       <Modal
         isOpen={isEditModalOpen}
         closeModal={onCloseEditModal}
@@ -129,6 +161,7 @@ const TodoList = () => {
             <Button
               className="bg-designColor hover:bg-hoverColor"
               type="submit"
+              isLoading={isUpdated}
             >
               submit
             </Button>
@@ -141,6 +174,31 @@ const TodoList = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+      {/* Delete Todo MODAL */}
+      <Modal
+        isOpen={isConfirmModalOpen}
+        closeModal={onCloseConfirmModal}
+        title="Are you sure you want to delete this product?"
+        description="Deleting this todo will remove it permanently from your inventory. Any associated data, sales history, and other related information will also be deleted. Please make sure this is the intended action."
+      >
+        <div className="flex flex-wrap items-center space-x-3 gap-y-2">
+          <Button
+            variant={"danger"}
+            type="button"
+            onClick={onRemoveHandler}
+            isLoading={isUpdated}
+          >
+            Yes, remove
+          </Button>
+          <Button
+            variant={"cancel"}
+            type="button"
+            onClick={onCloseConfirmModal}
+          >
+            cancel
+          </Button>
+        </div>
       </Modal>
     </div>
   );
