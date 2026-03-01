@@ -12,6 +12,10 @@ const TodoList = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
+  const defaultTodoToAdd = {
+    title: "",
+    description: "",
+  };
   const defaultTodo = {
     id: 0,
     documentId: "",
@@ -19,13 +23,16 @@ const TodoList = () => {
     description: "",
   };
 
+  const [queryVersion, setQueryVersion] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodo);
-
+  const [todoToAdd, setTodoToAdd] = useState(defaultTodoToAdd);
+  
   const { isLoading, data, error } = useAuthenticatedQuery({
-    queryKey: ["todoList", `${todoToEdit.documentId}`],
+    queryKey: ["todoList", `${queryVersion}`],
     url: "/users/me?populate=todos&status=draft",
     config: {
       headers: {
@@ -51,8 +58,35 @@ const TodoList = () => {
     setTodoToEdit(todo);
     setIsEditModalOpen(true);
   };
+  const onCloseAddModal = () => {
+    setTodoToAdd(defaultTodoToAdd);
+    setIsAddModalOpen(false);
+  };
+  const onOpenAddModal = () => setIsAddModalOpen(true);
 
-  const submitHandler = async (evt: FormEvent<HTMLFormElement>) => {
+  const submitToAddHandler = async (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    setIsUpdated(true);
+
+    const {title, description } = todoToAdd;
+    try {
+      const res = await axiosInstance.post(
+        `/todos`,
+        { data: { title, description } },
+        { headers: { Authorization: `Bearer ${userData.jwt}` } },
+      );
+
+      if (res.status === 200) {
+        setQueryVersion(prev => prev + 1)
+        onCloseAddModal();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUpdated(false);
+    }
+  };
+  const submitToEditHandler = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setIsUpdated(true);
 
@@ -65,6 +99,7 @@ const TodoList = () => {
       );
 
       if (res.status === 200) {
+        setQueryVersion(prev => prev + 1)
         onCloseEditModal();
       }
     } catch (error) {
@@ -84,6 +119,7 @@ const TodoList = () => {
       );
 
       if (status >= 200 && status <= 299) {
+        setQueryVersion(prev => prev + 1)
         onCloseConfirmModal();
       }
     } catch (error) {
@@ -93,6 +129,16 @@ const TodoList = () => {
     }
   };
 
+  const onChangeToAddHandler = (
+    evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { value, name } = evt.target;
+
+    setTodoToAdd((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const onChangeHandler = (
     evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -116,7 +162,12 @@ const TodoList = () => {
   if (error) return <h3>An error has occurred: {error.message}</h3>;
 
   return (
-    <div>
+    <div className="space-y-1">
+      <div className="w-fit mx-auto my-10">
+        <Button variant={"default"} size={"sm"} onClick={onOpenAddModal}>
+          Create new Todo
+        </Button>
+      </div>
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => {
           return (
@@ -149,13 +200,48 @@ const TodoList = () => {
       ) : (
         <h3 className="text-center text-gray-500">No todos found.</h3>
       )}
+      {/* Add Todo MODAL */}
+      <Modal
+        isOpen={isAddModalOpen}
+        closeModal={onCloseAddModal}
+        title="Create new Todo"
+      >
+        <form className="space-y-3" onSubmit={submitToAddHandler}>
+          <Input
+            name="title"
+            value={todoToAdd.title}
+            onChange={onChangeToAddHandler}
+          />
+          <Textarea
+            name="description"
+            value={todoToAdd.description}
+            onChange={onChangeToAddHandler}
+          />
+          <div className="flex flex-wrap items-center space-x-3 gap-y-2">
+            <Button
+              className="bg-designColor hover:bg-hoverColor"
+              type="submit"
+              isLoading={isUpdated}
+            >
+              Create
+            </Button>
+            <Button
+              variant={"cancel"}
+              type="button"
+              onClick={() => onCloseAddModal()}
+            >
+              cancel
+            </Button>
+          </div>
+        </form>
+      </Modal>
       {/* Update Todo MODAL */}
       <Modal
         isOpen={isEditModalOpen}
         closeModal={onCloseEditModal}
         title="Edit this todo"
       >
-        <form className="space-y-3" onSubmit={submitHandler}>
+        <form className="space-y-3" onSubmit={submitToEditHandler}>
           <Input
             name="title"
             value={todoToEdit.title}
@@ -172,7 +258,7 @@ const TodoList = () => {
               type="submit"
               isLoading={isUpdated}
             >
-              submit
+              Update
             </Button>
             <Button
               variant={"cancel"}
