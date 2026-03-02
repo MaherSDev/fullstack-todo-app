@@ -70,14 +70,12 @@ const TodoList = () => {
 
     const { title, description } = todoToAdd;
     try {
-      console.log(`${userData.user.documentId}`);
       const res = await axiosInstance.post(
         `/todos`,
         { data: { title, description, user: [userData.user.documentId] } },
         { headers: { Authorization: `Bearer ${userData.jwt}` } },
       );
-
-      if (res.status === 200) {
+      if (res.status >= 200 && res.status <= 300) {
         setQueryVersion((prev) => prev + 1);
         onCloseAddModal();
       }
