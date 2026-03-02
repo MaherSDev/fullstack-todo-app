@@ -30,7 +30,7 @@ const TodoList = () => {
   const [isUpdated, setIsUpdated] = useState(false);
   const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodo);
   const [todoToAdd, setTodoToAdd] = useState(defaultTodoToAdd);
-  
+
   const { isLoading, data, error } = useAuthenticatedQuery({
     queryKey: ["todoList", `${queryVersion}`],
     url: "/users/me?populate=todos&status=draft",
@@ -68,16 +68,17 @@ const TodoList = () => {
     evt.preventDefault();
     setIsUpdated(true);
 
-    const {title, description } = todoToAdd;
+    const { title, description } = todoToAdd;
     try {
+      console.log(`${userData.user.documentId}`);
       const res = await axiosInstance.post(
         `/todos`,
-        { data: { title, description } },
+        { data: { title, description, user: [userData.user.documentId] } },
         { headers: { Authorization: `Bearer ${userData.jwt}` } },
       );
 
       if (res.status === 200) {
-        setQueryVersion(prev => prev + 1)
+        setQueryVersion((prev) => prev + 1);
         onCloseAddModal();
       }
     } catch (error) {
@@ -99,7 +100,7 @@ const TodoList = () => {
       );
 
       if (res.status === 200) {
-        setQueryVersion(prev => prev + 1)
+        setQueryVersion((prev) => prev + 1);
         onCloseEditModal();
       }
     } catch (error) {
@@ -119,7 +120,7 @@ const TodoList = () => {
       );
 
       if (status >= 200 && status <= 299) {
-        setQueryVersion(prev => prev + 1)
+        setQueryVersion((prev) => prev + 1);
         onCloseConfirmModal();
       }
     } catch (error) {
@@ -150,15 +151,18 @@ const TodoList = () => {
     }));
   };
 
-  if (isLoading) 
+  if (isLoading)
     return (
-      <div className="space-y-1 p-3">
-        {Array.from({length: data?.todos.length}, (_, idx) => (
+      <div className="space-y-5">
+        <div className="w-fit mx-auto my-10">
+          <div className=" w-40 h-10 bg-gray-300 rounded-md dark:bg-gray-700 w-12"></div>
+        </div>
+        {Array.from({ length: 3 }, (_, idx) => (
           <TodoSkeleton key={idx} />
         ))}
       </div>
     );
-  
+
   if (error) return <h3>An error has occurred: {error.message}</h3>;
 
   return (
