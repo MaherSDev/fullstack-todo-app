@@ -33,8 +33,14 @@ const TodoList = () => {
 
   const { isLoading, data, error } = useAuthenticatedQuery({
     queryKey: ["todoList", `${queryVersion}`],
-    url: "/users/me?populate=todos&status=draft",
+    url: "/todos",
     config: {
+      params: {
+        filters: {
+          user: { id: { $eq: userData.user.id } },
+        },
+        pagination: { page: 1, pageSize: 10 },
+      },
       headers: {
         Authorization: `Bearer ${userData.jwt}`,
       },
@@ -171,8 +177,8 @@ const TodoList = () => {
           Create new Todo
         </Button>
       </div>
-      {data.todos.length ? (
-        data.todos.map((todo: ITodo) => {
+      {data.data.length ? (
+        data.data.map((todo: ITodo) => {
           return (
             <div
               key={todo.id}

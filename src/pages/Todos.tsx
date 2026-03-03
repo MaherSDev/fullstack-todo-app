@@ -7,11 +7,17 @@ const TodosPage = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
-  
+
   const { isLoading, data, error } = useAuthenticatedQuery({
     queryKey: ["paginatedTodos"],
-    url: "/users/me?populate=todos&status=draft",
+    url: "/todos",
     config: {
+      params: {
+        filters: {
+          user: { id: { $eq: userData.user.id } },
+        },
+        pagination: { page: 1, pageSize: 10 },
+      },
       headers: {
         Authorization: `Bearer ${userData.jwt}`,
       },
@@ -28,14 +34,14 @@ const TodosPage = () => {
           <TodoSkeleton key={idx} />
         ))}
       </div>
-    );  
+    );
 
   if (error) return <h3>An error has occurred: {error.message}</h3>;
 
   return (
     <section>
-      {data.todos.length ? (
-        data.todos.map((todo: ITodo) => {
+      {data.data.length ? (
+        data.data.map((todo: ITodo) => {
           return (
             <div
               key={todo.id}
