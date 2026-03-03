@@ -33,7 +33,7 @@ const TodosPage = () => {
   if (error) return <h3>An error has occurred: {error.message}</h3>;
 
   return (
-    <section className="max-w-2xl mx-auto">
+    <section>
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => {
           return (
