@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -53,8 +53,24 @@
   --breakpoint-xs: 35rem;
   --breakpoint-2xs: 30rem;
   --breakpoint-3xs: 22rem;
-}
 
+  /* Animations */
+	--animate-loading: loading 1s infinite; /* Apply animation */
+	@keyframes loading {
+  0% {
+    background-position: -200px 0; /* Start position for shimmer */
+  }
+  100% {
+    background-position: 200px 0; /* End position for shimmer */
+  }
+}
+}
 html {
-	font-family: var(--font-assistant), sans-serif;
+  font-family: var(--font-assistant), sans-serif;
+}
+.skeleton {
+  background-color: #e0e0e0; /* Light gray background */
+  background-image: linear-gradient(to right, transparent 0%, #F5F5F5 50%, transparent 100%); /* Shimmer gradient */
+  background-repeat: no-repeat;
+  background-size: 200px 100%;
 }

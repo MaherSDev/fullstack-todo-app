@@ -153,7 +153,8 @@ const TodoList = () => {
     return (
       <div className="space-y-5">
         <div className="w-fit mx-auto my-10">
-          <div className=" w-40 h-10 bg-gray-300 rounded-md dark:bg-gray-700 w-12"></div>
+          <div className="relative overflow-hidden w-40 h-10 bg-gray-300 rounded-md dark:bg-gray-700 animate-loading skeleton">
+          </div>
         </div>
         {Array.from({ length: 3 }, (_, idx) => (
           <TodoSkeleton key={idx} />
