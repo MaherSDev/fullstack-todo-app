@@ -172,7 +172,7 @@ const TodoList = () => {
     setSortBy(e.target.value);
   };
 
-  if (true)
+  if (isLoading)
     return (
       <div className="space-y-3">
         <div className="mx-auto my-2">
