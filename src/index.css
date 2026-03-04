@@ -61,7 +61,7 @@
     background-position: -200px 0; /* Start position for shimmer */
   }
   100% {
-    background-position: 200px 0; /* End position for shimmer */
+    background-position: calc(100% + 200px) 0; /* End position for shimmer */
   }
 }
 }
