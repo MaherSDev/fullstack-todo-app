@@ -17,7 +17,7 @@ const TodosPage = () => {
         filters: {
           user: { id: { $eq: userData.user.id } },
         },
-        pagination: { page, pageSize: 2 },
+        pagination: { page, pageSize: 10 },
       },
       headers: {
         Authorization: `Bearer ${userData.jwt}`,
@@ -72,6 +72,7 @@ const TodosPage = () => {
           isLoading={isLoading}
           onClickNext={onClickNext}
           onClickPrev={onClickPrev}
+          total={data.meta.pagination.total}
         />
       </div>
     </section>
